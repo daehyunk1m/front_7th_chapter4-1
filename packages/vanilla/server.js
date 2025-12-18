@@ -46,9 +46,13 @@ app.get("*all", async (req, res) => {
     }
     const rendered = await render(url);
 
+    const initialDataScript = rendered.initialData
+      ? `<script>window.__INITIAL_DATA__ = ${JSON.stringify(rendered.initialData)};</script>`
+      : "";
+
     const html = template
       .replace("<!--app-head-->", rendered.head ?? "")
-      .replace("<!--app-html-->", rendered.html ?? "");
+      .replace("<!--app-html-->", `${rendered.html ?? ""}${initialDataScript}`);
 
     res.status(200).set({ "Content-Type": "text/html" }).send(html);
   } catch (error) {
